@@ -90,10 +90,11 @@ class HomeView(GenericAPIView):
 
 
 
-                # response = render(request, "home.html", context)
+                # response = render(request, "home.html")
                 # response['Authoriztion'] = api_key
                 # return response
                 # return Response({"success":"logged in successfully","api_key":api_key}, status = status.HTTP_201_CREATED)
+                return render(request, 'home.html', {"message": "you are logged in"})
             else:
                 return render(request, 'login.html', {"message": "invalid email/password"})
                 # return Response({"failure":"please check your password and try again"}, status=status.HTTP_400_BAD_REQUEST)
@@ -270,7 +271,7 @@ class TaskView(viewsets.ModelViewSet):
     #     else:
     #         return Response({"failure": "task does not exist"}, status=status.HTTP_404_NOT_FOUND)
 
-    @action(detail=False, methods=['GET'], url_path="employees")
+    @action(detail=False, methods=['GET'], url_path="api/employees")
     def employee_list(self, request):
         # api_key = request.headers['Authorization']
         # if APIKeyModel.objects.filter(api_key=api_key).exists():
