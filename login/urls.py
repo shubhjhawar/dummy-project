@@ -22,4 +22,5 @@ urlpatterns = [
     path("api/tasks/<str:task_status>/",AllTaskView.as_view(), name='tasks-list'),
     path("api/user_login", UserLoginView.as_view(), name='user-login'),
     path("user_task/<int:user_id>", UserTaskView.as_view(), name='user-task'),
+    path("api/add_remark", AddRemarkView.as_view(), name='add-remark')
 ]

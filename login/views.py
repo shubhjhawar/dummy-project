@@ -382,27 +382,29 @@ class CreateTaskView(GenericAPIView):
     serializer_class = TaskSerializer
 
     def get(self, request):
-        return render(request, 'create_task.html')
+        users = CustomUser.objects.all()
+        return render(request, 'create_task.html', {'users':users})
 
     def post(self, request):
         try:
             data = request.data
             title = request.data.get('title', '')
             username = request.data.get('username', '')
-            username = username.split(", ")
             print(username)
+            username = username.split(", ")
+            users = CustomUser.objects.all()
             # if not username:
             #     return render(request, 'create_task.html', {"message": "username does not exists; task not saved"})
             for user in username:
                 if CustomUser.objects.filter(username=user).exists():
                     pass
                 else:
-                    return render(request, 'create_task.html', {"message": "username does not exists; task not saved"})
+                    return render(request, 'create_task.html', {"message": "username does not exists; task not saved",'users':users})
                     # return Response({"failure": "username does not exists; task not saved"},
                     #                 status=status.HTTP_400_BAD_REQUEST)
             task = TaskModel.objects.filter(title=title)
             if task.exists():
-                return render(request, 'create_task.html', {"message": "Sorry! Task already exists"})
+                return render(request, 'create_task.html', {"message": "Sorry! Task already exists",'users':users})
                 # return Response({"sorry": "Task already exists"}, status=status.HTTP_201_CREATED)
             else:
                 new_task = TaskModel.objects.create(title=data['title'], time=datetime.now().time(),
@@ -413,10 +415,10 @@ class CreateTaskView(GenericAPIView):
                     user_object = CustomUser.objects.get(username=user)
                     new_task.user.add(user_object)
 
-                return render(request, 'create_task.html', {"message":"task saved successfully"})
+                return render(request, 'create_task.html', {"message":"task saved successfully",'users':users})
                 # return Response({"success": "Task saved successfully"}, status=status.HTTP_201_CREATED)
         except Exception:
-            return render(request, 'create_task.html', {"message": "something went wrong"})
+            return render(request, 'create_task.html', {"message": "something went wrong",'users':users})
         # return Response({"failure": "something went wrong"}, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -500,3 +502,21 @@ class UserTaskView(GenericAPIView):
         user = user_serializer(user_object, many=True)
         # return Response(tasks.data, status=status.HTTP_200_OK)
         return render(request, 'user_task.html', {"tasks":tasks.data, "user_object":user.data})
+
+
+class AddRemarkView(GenericAPIView):
+    serializer_class = RemarkSerializer
+
+    def get(self, request):
+        tasks = TaskModel.objects.all()
+        return render(request, 'add_remark.html',{"tasks":tasks})
+
+    def post(self, request):
+        data = request.data
+        task_name = data.get('task_name', '')
+        remark = data.get('remark', '')
+        tasks = TaskModel.objects.all()
+        remark_object = RemarkModel.objects.create(remark=remark)
+        task_object = TaskModel.objects.get(title=task_name)
+        remark_object.task.add(task_object)
+        return render(request, 'add_remark.html', {"message":"Remark added successfully","tasks":tasks})

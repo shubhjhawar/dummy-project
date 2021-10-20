@@ -40,10 +40,10 @@
           </button>
         </div>
         <div>
-          <a class="navbar-brand brand-logo" href="index.html">
+          <a class="navbar-brand brand-logo" href="{% url 'dashboard' %}">
             <img src="{% static 'template/images/logo.svg' %}" alt="logo" />
           </a>
-          <a class="navbar-brand brand-logo-mini" href="index.html">
+          <a class="navbar-brand brand-logo-mini" href="{% url 'dashboard' %}">
             <img src="{% static 'template/images/logo-mini.svg' %}" alt="logo" />
           </a>
         </div>
@@ -379,9 +379,12 @@
               <span class="menu-title">Change Task Status</span>
             </a>
           </li>
-
-
-
+            <li class="nav-item">
+            <a class="nav-link" href="{% url 'add-remark' %}">
+              <i class="mdi mdi-grid-large menu-icon"></i>
+              <span class="menu-title">Add Remark</span>
+            </a>
+          </li>
         </ul>
       </nav>
       <!-- partial -->
@@ -415,18 +418,32 @@
                                       <h4><label for="title">Title:</label></h4>
                                       <input  class="form-control"  type="text" id="title" name="title" placeholder="new task"><br>
                                       <h4><label for="username" >Username:</label></h4>
-                                      <input class="form-control"  type="text" id="username" name="username" placeholder="username1, username2"><br>
+                                        <select id="username" class="select" name="username" multiple>
+                                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton11" >
+                                                {% for user in users%}
+                                                 <option class="dropdown-header" value={{user.username}} id={{user.username}}>{{user.username}}</option>
+                                                {% endfor %}
+                                            </div>
+                                        </select>
                                       <h4><label for="location">Location:</label></h4>
                                       <input class="form-control"  type="text" id="location" name="location" placeholder="new location"><br>
                                       <h4><label for="amount">Amount:</label></h4>
                                       <input class="form-control"  type="text" id="amount" name="amount" placeholder="1234"><br>
-                                      <h4><label for="status">Status:</label></h4>
-                                      <p class="welcome-sub-text">(available choices are new, complete, reject, hold, in_progress)</p>
-                                      <input class="form-control"  type="text" id="status" name="status" placeholder="new"><br>
+                                      <h4><label for="status">Status: </label></h4>
+                                        <select id="status" class="btn btn-secondary" name="status">
+                                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton12">
+                                            <option class="dropdown-header" value="new">new</option>
+                                            <option class="dropdown-header" value="in_progress">in progress</option>
+                                            <option class="dropdown-header" value="complete">complete</option>
+                                            <option class="dropdown-header" value="hold">hold</option>
+                                            <option class="dropdown-header" value="reject">reject</option>
+                                            </div>
+                                        </select>
 
                                       <button type="submit" class="btn btn-primary form-control" value="submit"><h4>Submit</h4></button>
 
                                     </form><br>
+
                                 </div>
                                 <div class="row flex-grow">
                           <div class="col-md-3 col-lg-12">

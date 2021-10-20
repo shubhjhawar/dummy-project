@@ -48,10 +48,10 @@
           </button>
         </div>
         <div>
-          <a class="navbar-brand brand-logo" href="index.html">
+          <a class="navbar-brand brand-logo" href="{% url 'dashboard' %}">
             <img src="{% static 'template/images/logo.svg' %}" alt="logo" />
           </a>
-          <a class="navbar-brand brand-logo-mini" href="index.html">
+          <a class="navbar-brand brand-logo-mini" href="{% url 'dashboard' %}">
             <img src="{% static 'template/images/logo-mini.svg' %}" alt="logo" />
           </a>
         </div>
@@ -385,6 +385,12 @@
             <a class="nav-link" href="{% url 'change-status' %}">
               <i class="mdi mdi-grid-large menu-icon"></i>
               <span class="menu-title">Change Task Status</span>
+            </a>
+          </li>
+            <li class="nav-item">
+            <a class="nav-link" href="{% url 'add-remark' %}">
+              <i class="mdi mdi-grid-large menu-icon"></i>
+              <span class="menu-title">Add Remark</span>
             </a>
           </li>
 
