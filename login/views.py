@@ -22,8 +22,8 @@ class CreateUserView(GenericAPIView):
     serializer_class = UserRegistrationSerializer
 
 
-    def get(self, request):
-        return render(request, "create_user.html")
+    # def get(self, request):
+    #     return render(request, "create_user.html")
 
     def post(self, request):
         try:
@@ -32,25 +32,29 @@ class CreateUserView(GenericAPIView):
             email = data.get("email", "")
             password = data.get("password", "")
             if CustomUser.objects.filter(username=username).exists():
-                return render(request, "create_user.html", {"message":"username already exists"})
+                return Response({"failure": "username already exists"}, status=status.HTTP_400_BAD_REQUEST)
+                # return render(request, "create_user.html", {"message":"username already exists"})
             if CustomUser.objects.filter(email=email).exists():
-                return render(request, "create_user.html", {"message": "email already exists"})
+                return Response({"failure": "email already exists"}, status=status.HTTP_400_BAD_REQUEST)
+                # return render(request, "create_user.html", {"message": "email already exists"})
             serializer =UserRegistrationSerializer(data=request.data)
             if serializer.is_valid():
                 serializer.save(user_status="0", password=password)
-                return render(request, "create_user.html", {"message":"user registered successfully"})
-                # return Response({"success":"user registered"}, status=status.HTTP_201_CREATED)
-            return render(request, "create_user.html", {"message":"something went wrong!" })
+                # return render(request, "create_user.html", {"message":"user registered successfully"})
+                return Response({"success":"user registered"}, status=status.HTTP_201_CREATED)
+            # return render(request, "create_user.html", {"message":"something went wrong!" })
+            return Response({"failure": "something went wrong!"}, status=status.HTTP_400_BAD_REQUEST)
         except Exception:
-            return render(request, "create_user.html", {"message": "something went wrong!"})
+            return Response({"failure": "something went wrong!"}, status=status.HTTP_400_BAD_REQUEST)
+            # return render(request, "create_user.html", {"message": "something went wrong!"})
 
 
 
 class HomeView(GenericAPIView):
     serializer_class = UserRegistrationSerializer
 
-    def get(self, request):
-        return render(request, 'login.html')
+    # def get(self, request):
+    #     return render(request, 'login.html')
 
     def post(self,request):
         data = request.data
@@ -59,7 +63,8 @@ class HomeView(GenericAPIView):
         if CustomUser.objects.filter(email=email).exists():
             object=CustomUser.objects.get(email=email)
             if object.user_status != "1":
-                return render(request, 'login.html', {"message": "only an admin is authorized to use this service"})
+                return Response({"failure": "only an admin is authorized to use this service"}, status=status.HTTP_400_BAD_REQUEST)
+                # return render(request, 'login.html', {"message": "only an admin is authorized to use this service"})
             if object.check_password(password):
                 # now = datetime.now()
                 # now_30 = str(now + timedelta(minutes=30))
@@ -93,21 +98,21 @@ class HomeView(GenericAPIView):
                 # response = render(request, "home.html")
                 # response['Authoriztion'] = api_key
                 # return response
-                # return Response({"success":"logged in successfully","api_key":api_key}, status = status.HTTP_201_CREATED)
-                return render(request, 'home.html', {"message": "you are logged in"})
+                return Response({"success":"logged in successfully","api_key":api_key}, status = status.HTTP_201_CREATED)
+                # return render(request, 'home.html', {"message": "you are logged in"})
             else:
-                return render(request, 'login.html', {"message": "invalid email/password"})
-                # return Response({"failure":"please check your password and try again"}, status=status.HTTP_400_BAD_REQUEST)
+                # return render(request, 'login.html', {"message": "invalid email/password"})
+                return Response({"failure":"please check your password and try again"}, status=status.HTTP_400_BAD_REQUEST)
         else:
-            return render(request, 'login.html', {"message": "invalid email/password"})
-            # return Response({"failure": "invalid email"}, status=status.HTTP_400_BAD_REQUEST)
+            # return render(request, 'login.html', {"message": "invalid email/password"})
+            return Response({"failure": "invalid email"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserLoginView(GenericAPIView):
     serializer_class = UserRegistrationSerializer
 
-    def get(self, request):
-        return render(request, 'login22.html')
+    # def get(self, request):
+    #     return render(request, 'login22.html')
 
     def post(self, request):
         data = request.data
@@ -122,14 +127,18 @@ class UserLoginView(GenericAPIView):
         if CustomUser.objects.filter(email=email).exists():
             object = CustomUser.objects.get(email=email)
             if object.user_status != "0":
-                return render(request, 'login22.html', {"message": "only an user is authorized to use this service"})
+                return Response({"failure": "only an user is authorized to use this service"}, status=status.HTTP_400_BAD_REQUEST)
+                # return render(request, 'login22.html', {"message": "only an user is authorized to use this service"})
             if object.password == password or object.check_password(password):
                 # return Response(tasks.data, status=status.HTTP_200_OK)
                 # return render(request, 'user_task.html', {"tasks": tasks.data, "user_object": user.data})
-                return render(request, 'user_task2.html',{"tasks": tasks.data, "user_object": user.data})
+                return Response({"success": "user logged in","tasks": tasks.data, "user_object": user.data},status=status.HTTP_400_BAD_REQUEST)
+                # return render(request, 'user_task2.html',{"tasks": tasks.data, "user_object": user.data})
             else:
-                return render(request, 'login22.html', {"message": "invalid username/password"})
-        return render(request, 'login22.html', {"message": "something went wrong"})
+                return Response({"failure": "invalid username/password"}, status=status.HTTP_400_BAD_REQUEST)
+                # return render(request, 'login22.html', {"message": "invalid username/password"})
+        return Response({"failure": "something went wrong"}, status=status.HTTP_400_BAD_REQUEST)
+        # return render(request, 'login22.html', {"message": "something went wrong"})
 
 
 
@@ -143,8 +152,8 @@ class Dashboard(GenericAPIView):
 class LoginView(GenericAPIView):
 
     serializer_class = CustomUser
-    def get(self,request):
-        return render(request,'login.html')
+    # def get(self,request):
+    #     return render(request,'login.html')
 
 
 
@@ -164,11 +173,11 @@ class LoginView(GenericAPIView):
                 # }
                 encoded_token =''.join(random.choice(object.username + string.ascii_lowercase + string.digits) for x in range(25))
                 # encoded_jwt = jwt.encode(payload, secret, algorithm="HS256")
-                return render(request, 'login.html',{"message":"login successful", "token":encoded_token})
+                return Response({"success":"login successful", "token":encoded_token}, status=status.HTTP_200_OK)
             else:
-                return render(request, 'login.html', {"message": "please enter the correct password"})
+                return Response({"failure": "please enter the correct password"})
         else:
-            return render(request, 'login.html', {"message": "username not found"})
+            return Response({"failure": "username not found"})
 
 class EmailLoginView(GenericAPIView):
     serializer_class = UserRegistrationSerializer
@@ -291,7 +300,7 @@ class TaskView(viewsets.ModelViewSet):
                 # for q in queryset:
                 #     print(q.get_user_status_display())
             # print(employee_list)
-        return render(request, 'users.html', {"users":employee_list})
+        return Response({"users":employee_list})
             # return Response({"success": employee_list}, status=status.HTTP_200_OK)
         # else:
         #     return Response({"failure": "Invalid API KEY"}, status=status.HTTP_404_NOT_FOUND)
@@ -358,9 +367,9 @@ class RemarkView(GenericAPIView):
             task_object = TaskModel.objects.get(id=task_id)
             remark_object.task.add(task_object)
             # return render(request, 'login.html', {"message": "please enter the correct password"})
-            return render(request, 'add_remark.html', {"message": "remark registered successfully"})
+            return Response({"success": "remark registered successfully"})
         except Exception:
-            return render(request, 'add_remark.html',{"message": "something went wrong"})
+            return Response({"failure": "something went wrong"})
 
 
 class GetRemarkView(GenericAPIView):
@@ -381,16 +390,15 @@ class GetRemarkView(GenericAPIView):
 class CreateTaskView(GenericAPIView):
     serializer_class = TaskSerializer
 
-    def get(self, request):
-        users = CustomUser.objects.all()
-        return render(request, 'create_task.html', {'users':users})
+    # def get(self, request):
+    #     users = CustomUser.objects.all()
+    #     return render(request, 'create_task.html', {'users':users})
 
     def post(self, request):
         try:
             data = request.data
             title = request.data.get('title', '')
             username = request.data.get('username', '')
-            print(username)
             username = username.split(", ")
             users = CustomUser.objects.all()
             # if not username:
@@ -399,13 +407,12 @@ class CreateTaskView(GenericAPIView):
                 if CustomUser.objects.filter(username=user).exists():
                     pass
                 else:
-                    return render(request, 'create_task.html', {"message": "username does not exists; task not saved",'users':users})
-                    # return Response({"failure": "username does not exists; task not saved"},
-                    #                 status=status.HTTP_400_BAD_REQUEST)
+                    # return render(request, 'create_task.html', {"message": "username does not exists; task not saved",'users':users})
+                    return Response({"failure": "username does not exists; task not saved"},status=status.HTTP_400_BAD_REQUEST)
             task = TaskModel.objects.filter(title=title)
             if task.exists():
-                return render(request, 'create_task.html', {"message": "Sorry! Task already exists",'users':users})
-                # return Response({"sorry": "Task already exists"}, status=status.HTTP_201_CREATED)
+                # return render(request, 'create_task.html', {"message": "Sorry! Task already exists",'users':users})
+                return Response({"sorry": "Task already exists"}, status=status.HTTP_201_CREATED)
             else:
                 new_task = TaskModel.objects.create(title=data['title'], time=datetime.now().time(),
                                                     date=datetime.now().date(),
@@ -415,11 +422,11 @@ class CreateTaskView(GenericAPIView):
                     user_object = CustomUser.objects.get(username=user)
                     new_task.user.add(user_object)
 
-                return render(request, 'create_task.html', {"message":"task saved successfully",'users':users})
-                # return Response({"success": "Task saved successfully"}, status=status.HTTP_201_CREATED)
+                # return Response({"success":"task saved successfully",'users':users})
+                return Response({"success": "Task saved successfully"}, status=status.HTTP_201_CREATED)
         except Exception:
-            return render(request, 'create_task.html', {"message": "something went wrong",'users':users})
-        # return Response({"failure": "something went wrong"}, status=status.HTTP_400_BAD_REQUEST)
+                # return Response({"failure": "something went wrong"})
+                 return Response({"failure": "something went wrong"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class AllTaskView(GenericAPIView):
@@ -436,15 +443,15 @@ class AllTaskView(GenericAPIView):
         user_serializer = UserRegistrationSerializer
         tasks = task_serializer(tasks, many=True)
         users = user_serializer(users, many=True)
-        return render(request, 'tasks_list.html', {"tasks":tasks.data,"users":users.data})
+        return Response({"tasks":tasks.data,"users":users.data}, status=status.HTTP_200_OK)
 
 
 class ChangeStatusView(GenericAPIView):
     serializer_class = TaskSerializer
 
-    def get(self, request):
-        tasks = TaskModel.objects.all()
-        return render(request, 'change_status.html', {"tasks":tasks})
+    # def get(self, request):
+    #     tasks = TaskModel.objects.all()
+    #     return render(request, 'change_status.html', {"tasks":tasks})
 
     def post(self, request):
         tasks = TaskModel.objects.all()
@@ -461,7 +468,7 @@ class ChangeStatusView(GenericAPIView):
                         task_object.amount = new_amount
                         task_object.save(update_fields=['amount'])
                     else:
-                        return render(request, 'change_status.html', {"message":"please provide amount also","tasks":tasks})
+                        return Response({"message":"please provide amount also","tasks":tasks}, status=status.HTTP_400_BAD_REQUEST)
                         # return Response({"failure": "please provide amount also"}, status=status.HTTP_404_NOT_FOUND)
                 elif new_status == 'hold':
                     reason_hold = data.get('reason_hold', '')
@@ -469,25 +476,25 @@ class ChangeStatusView(GenericAPIView):
                         reason_object = ReasonModel.objects.create(reason_hold=reason_hold)
                         reason_object.task.add(task_object)
                     else:
-                        return render(request, 'change_status.html', {"message": "please provide a reason also","tasks":tasks})
+                        return Response({"message": "please provide a reason also","tasks":tasks}, status=status.HTTP_400_BAD_REQUEST)
                 elif new_status == 'reject':
                     reason_reject = data.get('reason_reject', '')
                     if len(reason_reject) != 0:
                         reason_object = ReasonModel.objects.create(reason_reject=reason_reject)
                         reason_object.task.add(task_object)
                     else:
-                        return render(request, 'change_status.html',
-                                      {"message": "please provide a reason also", "tasks": tasks})
-                # return Response({"failure": "please provide a reason also"}, status=status.HTTP_404_NOT_FOUND)
+                        # return render(request, 'change_status.html',
+                        #               {"message": "please provide a reason also", "tasks": tasks})
+                        return Response({"failure": "please provide a reason also"}, status=status.HTTP_404_NOT_FOUND)
                 task_object.task_status = new_status
                 task_object.save(update_fields=['task_status'])
-                return render(request, 'change_status.html', {"message": "task updated successfully","tasks":tasks})
-                # return Response({"success":"task updated successfully"}, status=status.HTTP_200_OK)
+                # return render(request, 'change_status.html', {"message": "task updated successfully","tasks":tasks})
+                return Response({"success":"task updated successfully"}, status=status.HTTP_200_OK)
             else:
-                return render(request, 'change_status.html', {"message": "task does not exist","tasks":tasks})
-                # return Response({"failure": "task does not exist"}, status=status.HTTP_404_NOT_FOUND)
+                # return render(request, 'change_status.html', {"message": "task does not exist","tasks":tasks})
+                return Response({"failure": "task does not exist"}, status=status.HTTP_404_NOT_FOUND)
         except Exception:
-            return render(request, 'change_status.html', {"message": "something went wrong", "tasks": tasks})
+            return Response({"failure": "something went wrong", "tasks": tasks},status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserTaskView(GenericAPIView):
@@ -500,16 +507,16 @@ class UserTaskView(GenericAPIView):
         tasks = task_serializer(tasks, many=True)
         user_serializer = UserRegistrationSerializer
         user = user_serializer(user_object, many=True)
-        # return Response(tasks.data, status=status.HTTP_200_OK)
-        return render(request, 'user_task.html', {"tasks":tasks.data, "user_object":user.data})
+        return Response(tasks.data, status=status.HTTP_200_OK)
+        # return render(request, 'user_task.html', {"tasks":tasks.data, "user_object":user.data})
 
 
 class AddRemarkView(GenericAPIView):
     serializer_class = RemarkSerializer
 
-    def get(self, request):
-        tasks = TaskModel.objects.all()
-        return render(request, 'add_remark.html',{"tasks":tasks})
+    # def get(self, request):
+    #     tasks = TaskModel.objects.all()
+    #     return render(request, 'add_remark.html',{"tasks":tasks})
 
     def post(self, request):
         data = request.data
@@ -519,4 +526,4 @@ class AddRemarkView(GenericAPIView):
         remark_object = RemarkModel.objects.create(remark=remark)
         task_object = TaskModel.objects.get(title=task_name)
         remark_object.task.add(task_object)
-        return render(request, 'add_remark.html', {"message":"Remark added successfully","tasks":tasks})
+        return Response({"success":"Remark added successfully","tasks":tasks}, status=status.HTTP_201_CREATED)
